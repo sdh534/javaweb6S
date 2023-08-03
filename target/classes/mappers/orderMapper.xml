@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb6S.dao.OrderDAO">
+
+	<select id="getMemberCart"
+		resultType="com.spring.javaweb6S.vo.CartVO">
+		select * from cart where m_mid = #{m_mid};
+	</select>
+
+	<select id="getOrderCode"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.o_orderCode, od.attn_address, p.* from orders o, orderdetail od,
+		payment p
+		where o.o_orderCode = #{o_orderCode} and o.o_idx= od.o_idx and o.o_idx =
+		p.o_idx;
+	</select>
+
+
+	<update id="updateMemberCart">
+		update cart set od_amount = #{vo.od_amount} where
+		cart_idx = #{vo.cart_idx};
+	</update>
+
+	<insert id="setMemberCart">
+		insert into cart values(default, #{vo.m_mid},
+		#{vo.p_idx}, #{vo.od_amount});
+	</insert>
+
+	<delete id="deleteCart">
+		delete from cart where p_idx = #{p_idx} and m_mid =
+		#{sMid};
+	</delete>
+
+
+	<insert id="setNewOrder" useGeneratedKeys="true"
+		keyProperty="o_idx" parameterType="com.spring.javaweb6S.vo.OrderVO">
+		insert into orders values (default,
+		#{vo.m_mid}, default, #{vo.o_orderCode});
+	</insert>
+
+	<insert id="setNewOrderDetail">
+		insert into orderdetail values (default, #{o_idx},
+		#{vo.attn_name},#{vo.attn_phone}, #{vo.attn_email},
+		#{vo.attn_address}, default, default, #{vo.od_detail})
+	</insert>
+
+	<insert id="setNewPaymentDetail">
+		<if test="vo.cu_idx == ''">
+			insert into payment values (default, #{o_idx},
+			#{vo.imp_uid}, #{vo.pay_method}, default, #{vo.pay_price},
+			#{vo.pay_plusPrice}, #{vo.pay_vbankPrice}, #{vo.pay_vbankName},
+			#{vo.pay_vbankNumber}, #{vo.pay_vbankDate}, #{vo.pay_cardCode},
+			#{vo.pay_cardName}, #{vo.pay_bankCode}, #{vo.pay_bankName}, default,
+			#{vo.pay_point} ,default,default)
+		</if>
+		<if test="vo.cu_idx != ''">
+			insert into payment values (default, #{o_idx},
+			#{vo.imp_uid}, #{vo.pay_method}, default, #{vo.pay_price},
+			#{vo.pay_plusPrice}, #{vo.pay_vbankPrice}, #{vo.pay_vbankName},
+			#{vo.pay_vbankNumber}, #{vo.pay_vbankDate}, #{vo.pay_cardCode},
+			#{vo.pay_cardName}, #{vo.pay_bankCode}, #{vo.pay_bankName},
+			#{vo.cu_idx}, #{vo.pay_point} ,default,default)
+		</if>
+	</insert>
+
+	<insert id="setNewOrderItems">
+		insert into orderitems values (#{o_idx}, #{p_idx},
+		#{od_amount}, #{oi_productCode}, #{o_status}, default);
+	</insert>
+
+	<update id="setProductMinus">
+		update product set p_amount = p_amount - #{od_amount}
+		where p_idx = #{p_idx};
+	</update>
+
+
+	<update id="setCouponUse">
+		update coupon_user set cu_status = true,
+		cu_useDate=now() where cu_idx = #{cu_idx};
+	</update>
+
+	<!-- 개별 주문상태 업데이트 -->
+	<update id="updateOrderStatus">
+		update orderitems set o_status = #{status},
+		oi_updateDate=now() where oi_productCode = #{oi_productCode};
+	</update>
+
+	<!-- 회원의 포인트를 업데이트 -->
+	<update id="updateMemberPoint">
+		update smember set m_point = m_point + #{point} where
+		m_mid = #{sMid};
+	</update>
+
+	<!-- 쿠폰 내역 가져오기 -->
+	<select id="getCouponUse"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select cp_type, cp_price, cp_ratio, cp_minValue from payment p
+		inner join coupon_user cu on p.cu_idx =cu.cu_idx
+		inner join coupon cp on cp.cp_idx = cu.cp_idx
+		where o_idx = #{o_idx};
+	</select>
+
+	<!-- 환불 후 해당 금액만큼 결제 내역에서 차감 -->
+	<select id="updatePayPrice">
+		update payment set pay_price = pay_price -
+		#{refundPrice} where o_idx = #{o_idx}
+	</select>
+
+	<!-- 결제 대기중인 요청건을 가져옴 -->
+	<select id="getPaidStatus" resultType="String">
+		select imp_uid from
+		orderitems oi
+		inner join orders o on o.o_idx = oi.o_idx
+		inner join
+		payment p on p.o_idx = oi.o_idx
+		where o_status = '결제대기';
+	</select>
+
+	<!-- imp-uid로 orderCode 가져옴 -->
+	<select id="getImp_uid" resultType="String">
+		select oi.oi_productCode from
+		orderitems oi
+		inner join orders o on o.o_idx = oi.o_idx
+		inner join
+		payment p on p.o_idx = oi.o_idx
+		where imp_uid = #{imp_uid} group by
+		o.o_idx;
+	</select>
+
+	<insert id="pointHistory"> <!-- 0일땐 적립 / 1일땐 차감 -->
+		insert into point values (#{mid}, #{point}, #{oi_productCode},
+		default, default, false);
+	</insert>
+
+	<insert id="pointMinus"> <!-- 0일땐 적립 / 1일땐 차감 -->
+		insert into point values (#{mid}, #{point}, default, #{o_idx},
+		default, true);
+	</insert>
+
+	<update id="minusMemberPoint">
+		update smember set m_point = m_point - #{point} where
+		m_mid = #{m_mid};
+	</update>
+</mapper>

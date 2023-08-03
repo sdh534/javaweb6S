@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb6S.dao.ProductDAO">
+	<!-- 메인화면가져오기 -->
+	<select id="getHomeProduct" resultType="com.spring.javaweb6S.vo.ProductVO">
+	select * from home_product h 
+	inner join product p on h.p_idx = p.p_idx;
+	</select>
+
+	<select id="getProductInfo" resultType="com.spring.javaweb6S.vo.ProductVO">
+		select p.*, cM.c_mainName, cMi.c_middleName, avg(review.review_rating) as p_rating
+		from product p inner join c_mainCategory cM on p.c_mainCode = cM.c_mainCode 
+		inner join c_middleCategory cMi on p.c_middleCode = cMi.c_middleCode
+		left join sreview review on p.p_idx = review.p_idx 
+		where p.p_idx = #{p_idx};
+	</select>
+	
+	<select id="getProductList" resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from product where ${category} = #{value} and p_sellstatus=1;
+	</select>
+	
+	<select id="totRecCnt" resultType="int">
+		select count(*) from product 
+		<if test="part != '' and searchString != ''">
+		 where ${part} = #{searchString};
+		</if>
+	</select>
+	
+	<select id="getProductPageList" resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from product 
+		<choose>
+		<when test="sort=='review'">
+		left join sreview r on product.p_idx = r.p_idx
+		where ${category} = #{search} group by product.p_idx
+		order by avg(review_rating) desc
+		</when>
+		
+		<when test="sort!='review'">
+			where ${category} = #{search}
+			<if test="sort == 'latest' || sort == ''">
+				order by p_idx desc
+			</if>
+			<if test="sort == 'low-price'">
+				order by p_price asc
+			</if>
+			<if test="sort == 'high-price'">
+				order by p_price desc
+			</if>
+		</when>
+		</choose>
+			limit #{startIndexNo} , #{pageSize};
+	</select>
+	
+	<select id="getProductSearchList" resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from product 
+		<choose>
+		<when test="sort=='review'">
+		left join sreview r on product.p_idx = r.p_idx
+		where p_name like concat('%',#{searchKeyword},'%') group by product.p_idx
+		order by avg(review_rating) desc
+		</when>
+		<when test="sort!='review'">
+			where p_name like concat('%',#{searchKeyword},'%')
+			<if test="sort == 'latest' || sort == ''">
+				order by p_idx asc
+			</if>
+			<if test="sort == 'low-price'">
+				order by p_price asc
+			</if>
+			<if test="sort == 'high-price'">
+				order by p_price desc
+			</if>
+		</when>
+		</choose>
+			limit #{startIndexNo} , #{pageSize};
+	</select>
+	
+	<select id="getProductNewPageList" resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from product 
+		order by p_idx desc
+		limit #{startIndexNo} , #{pageSize};
+	</select>
+	
+	<insert id="insertQnA">
+		insert into product_qna values (default, #{vo.p_idx}, #{vo.m_mid}, #{vo.qna_context}, #{vo.openSw}, default, default, default, default)
+	</insert>
+	
+	<select id="getQnAList" resultType="com.spring.javaweb6S.vo.QnaVO">
+		select * from product_qna
+		where p_idx = #{p_idx}
+		<if test="answerOK != ''">
+			and answerOK = #{answerOK}
+		</if>
+		order by qna_Date desc
+		limit #{startIndexNo} , #{pageSize};
+	</select>
+	
+	<select id="totRecQnACnt" resultType="int">
+		select count(*) from product_qna where p_idx = #{p_idx};
+	</select>
+	
+	<select id="totRecQnASortCnt" resultType="int">
+		select count(*) from product_qna where p_idx = #{p_idx} and answerOK = #{answerOK};
+	</select>
+	
+	<select id="totSearchCnt" resultType="int">
+		select count(*) from product where p_name like concat('%',#{searchKeyword},'%');
+	</select>
+	
+	<select id="totRecReviewCnt" resultType="int">
+		select count(*) from sreview where p_idx = #{p_idx};
+	</select>
+	
+	<select id="getCategory" resultType="com.spring.javaweb6S.vo.CategoryVO">
+		select * from c_middlecategory where c_mainCode = #{c_mainCode};
+	</select>
+	
+	<select id="getMainCategoryName" resultType="string">
+		select c_mainName from c_maincategory where c_mainCode = #{mainCode};
+	</select>
+	
+	
+	<select id="getHomeReview" resultType="com.spring.javaweb6S.vo.ReviewVO">
+	SELECT r.*, p.p_thumbnailIdx from sreview r
+	LEFT JOIN product p ON p.p_idx = r.p_idx
+	ORDER BY review_date desc
+	LIMIT 0, 3
+	</select>
+	
+
+	
+	
+</mapper>

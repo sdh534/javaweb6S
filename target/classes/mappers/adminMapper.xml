@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb6S.dao.AdminDAO">
+
+	<!-- 대분류 추가 -->
+	<insert id="setMainCategoryInsert">
+		insert into c_maincategory values (#{vo.c_mainCode},
+		#{vo.c_mainName});
+	</insert>
+
+	<!-- 대분류 모아보기 -->
+	<select id="getAllMainCategory"
+		resultType="com.spring.javaweb6S.vo.CategoryVO">
+		select * from c_maincategory order by c_mainCode asc;
+	</select>
+
+	<!-- 대분류가 존재하는지 확인 -->
+	<select id="getMainCategory"
+		resultType="com.spring.javaweb6S.vo.CategoryVO">
+		select * from c_maincategory where c_mainName =
+		#{c_mainName} || c_mainCode = #{c_mainCode};
+	</select>
+
+	<!-- 중분류 카테고리가 존재하는지 확인 -->
+	<select id="getMiddleCategoryExist"
+		resultType="com.spring.javaweb6S.vo.CategoryVO">
+		select * from c_middlecategory
+		where c_mainCode = #{vo.c_mainCode} and c_middleCode = #{vo.c_middleCode}
+		and c_middleName = #{vo.c_middleName};
+	</select>
+
+	<!-- 중분류 추가 -->
+	<insert id="setMiddleCategoryInsert">
+		insert into c_middlecategory values
+		(#{vo.c_mainCode}, #{vo.c_middleCode}, #{vo.c_middleName});
+	</insert>
+
+	<!-- 중분류의 모든 카테고리 가져오기 -->
+	<select id="getAllMiddleCategory"
+		resultType="com.spring.javaweb6S.vo.CategoryVO">
+		select * from c_middlecategory
+		LEFT JOIN c_maincategory on c_middlecategory.c_mainCode =
+		c_mainCategory.c_mainCode
+		order by c_middleCode asc;
+	</select>
+
+	<!-- 대분류 코드에 따른 중분류 가져오기 -->
+	<select id="getMiddleCategoryCode"
+		resultType="com.spring.javaweb6S.vo.CategoryVO">
+		select * from c_middlecategory where c_mainCode =
+		#{c_mainCode};
+	</select>
+
+	<!-- 서버에 저장된 썸네일 이미지 가져오기 -->
+	<select id="getImageFile" resultType="String">
+		select p_image from product
+		where where p_idx = #{p_idx};
+	</select>
+
+	<delete id="deleteMiddleCategory">
+		delete from c_middlecategory where c_middleCode =
+		#{c_middleCode};
+	</delete>
+
+	<delete id="deleteMainCategory">
+		delete from c_maincategory where c_mainCode =
+		#{c_mainCode};
+	</delete>
+
+
+	<insert id="addProduct">
+		insert into product values (default, #{vo.p_name},
+		#{vo.p_amount}, #{vo.p_price}, #{vo.p_origPrice}, #{vo.p_image},
+		#{vo.p_content}, #{vo.p_info}, #{vo.p_sellStatus}, default, default,
+		#{vo.c_mainCode}, #{vo.c_middleCode}, #{vo.p_thumbnailIdx});
+	</insert>
+
+	<select id="getAllProduct"
+		resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from product order by p_idx asc;
+	</select>
+
+	<select id="getProduct"
+		resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from product where p_idx = #{p_idx};
+	</select>
+
+	<update id="updateProductInt">
+		update product set ${updateCol} = #{updateValInt}
+		where p_idx = #{p_idx};
+	</update>
+
+	<update id="updateProduct">
+		update product set ${updateCol} = #{updateVal} where
+		p_idx = #{p_idx};
+	</update>
+
+	<!-- 전체 수정 -->
+	<update id="updateProductAll">
+		update product set p_name = #{vo.p_name}, p_amount =
+		#{vo.p_amount}, p_price = #{vo.p_price},
+		p_origPrice = #{vo.p_origPrice}, p_image=#{vo.p_image},
+		p_content=#{vo.p_content},
+		p_info=#{vo.p_info}, p_sellStatus=#{vo.p_sellStatus},c_mainCode=#{vo.c_mainCode},
+		c_middleCode=#{vo.c_middleCode}, p_thumbnailIdx=#{vo.p_thumbnailIdx}
+		where p_idx = #{vo.p_idx};
+	</update>
+
+	<select id="getAllTotal" resultType="int">
+		select sum(p) as total from
+		(select pay_price as p from orders o
+		inner join payment od on o.o_idx = od.o_idx
+		inner join orderitems oi on
+		oi.o_idx = o.o_idx
+		left join order_cs cs on o.o_idx = cs.o_idx
+		where
+		o_status not like '%주문취소%'
+		group by o.o_idx) as idx;
+	</select>
+
+	<select id="getRefundTotal" resultType="int">
+		select sum(refund_amount)
+		as total from orders o
+		inner join payment od on o.o_idx = od.o_idx
+		left join order_cs cs on o.o_idx
+		= cs.o_idx;
+	</select>
+
+
+	<!-- 주문 조회 -->
+	<select id="getAllOrder"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, pay.* ,oi.*, p.p_name, p_thumbnailIdx, p_price,
+		cs.cs_status from orders o
+		left join payment pay on o.o_idx = pay.o_idx
+		left join orderitems oi on
+		o.o_idx = oi.o_idx
+		left join order_cs cs on cs.oi_productCode =
+		oi.oi_productCode
+		left join product p on oi.p_idx = p.p_idx order by
+		o.o_date desc;
+	</select>
+
+	<!-- 주문 조회 -->
+	<select id="allOrderChangeList"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, pay.* ,oi.*, p.p_name, p_thumbnailIdx, p_price,
+		cs.cs_status from orders o
+		left join payment pay on o.o_idx = pay.o_idx
+		left join orderitems oi on
+		o.o_idx = oi.o_idx
+		left join order_cs cs on cs.oi_productCode =
+		oi.oi_productCode
+		left join product p on oi.p_idx = p.p_idx
+		where
+		cs_status is null order by o.o_date desc;
+	</select>
+
+	<select id="getAllCS"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, cs.*,oi.od_amount, oi.p_idx, oi.oi_productCode,
+		p.p_name, p_thumbnailIdx, p_price
+		from orders o
+		inner join orderitems oi on o.o_idx = oi.o_idx
+		inner join product p on
+		oi.p_idx = p.p_idx
+		inner join order_cs cs on cs.oi_productCode = oi.oi_productCode
+		where
+		cs_status != ''
+		order by o.o_date desc;
+	</select>
+
+	<select id="getOrderInfo"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, cs.*,oi.*,
+		pay.*, cu.cu_status, cp.cp_name, od.*
+		from orders o
+		left join orderitems oi on o.o_idx = oi.o_idx
+		left join orderdetail od on
+		od.o_idx = o.o_idx
+		left join order_cs cs on cs.oi_productCode = oi.oi_productCode
+		left join
+		payment pay on pay.o_idx = o.o_idx
+		left join coupon_user cu on
+		pay.cu_idx = cu.cu_idx
+		left join coupon cp on cp.cp_idx = cu.cp_idx
+		where o.o_idx = #{o_idx} group by o.o_idx;
+	</select>
+
+	<!-- 주문한 상품 조회(주문번호별) -->
+	<select id="getProductOrder"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select p.p_name, p_thumbnailIdx, p_price, cs.* from orders
+		o
+		inner join orderitems oi on o.o_idx = oi.o_idx
+		inner join product p on
+		oi.p_idx = p.p_idx
+		inner join orderdetail od on od.o_idx = o.o_idx
+		left join order_cs cs on cs.oi_productCode = oi.oi_productCode
+		where
+		o.o_idx = #{o_idx}
+	</select>
+
+
+	<!-- 주문 조회 -->
+	<select id="getOrder"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, pay.*, cs.* ,oi.*, p.p_name, p_thumbnailIdx, p_price from
+		orders o
+		inner join payment pay on o.o_idx = pay.o_idx
+		join orderitems oi on o.o_idx
+		= oi.o_idx
+		left join product p on oi.p_idx = p.p_idx
+		left join order_cs cs on cs.oi_productCode = oi.oi_productCode
+		<where>
+			<if test="pay_method != null and pay_method[0] !=''">
+				pay_method IN
+				<foreach collection="pay_method" item="pay_method"
+					separator="," open="(" close=")">
+					#{pay_method}
+				</foreach>
+			</if>
+			<trim prefix="AND"> <!-- o_status가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="o_status != null and o_status[0] != ''">
+					o_status IN
+					<foreach collection="o_status" item="o_status"
+						separator="," open="(" close=")">
+						#{o_status}
+					</foreach>
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- o_cStatus가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="o_cStatus != null and o_cStatus[0] != ''">
+					cs_status IN
+					<foreach collection="o_cStatus" item="o_cStatus"
+						separator="," open="(" close=")">
+						#{o_cStatus}
+					</foreach>
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- durationCategory가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="durationCategory != '' and durationCategory != null">
+				 <![CDATA[ ${durationCategory} >= #{startDate} AND ${durationCategory} < date_add(#{endDate}, interval 1 day)]]>
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- searchCategory가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="searchCategory != '' and searchCategory != null">
+					${searchCategory} like concat('%',#{searchKeyword},'%')
+				</if>
+			</trim>
+		</where>
+		;
+	</select>
+
+
+	<select id="getOrderbyProductCode"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, pay.* ,oi.od_amount, oi.p_idx, p.p_name,
+		p_thumbnailIdx, p_price, refund_amount from orders o
+		left join payment pay on o.o_idx = pay.o_idx
+		left join orderitems oi on
+		o.o_idx = oi.o_idx
+		left join product p on oi.p_idx = p.p_idx
+		inner join
+		order_cs cs on cs.o_idx = o.o_idx
+		where oi.oi_productCode = #{oi_productCode};
+	</select>
+
+	<update id="updateCS">
+		<foreach collection="oi_productCodes" item="oi_productCode">
+			update order_cs set cs_status = #{updateStatus} where oi_productCode =
+			#{oi_productCode}
+		</foreach>
+	</update>
+
+	<!-- 배송시작 조회 -->
+	<select id="getDeliveryStart"
+		resultType="com.spring.javaweb6S.vo.OrderVO">
+		select od.*, o.*, oi.*, p.pay_date, o.m_mid from
+		orderdetail od
+		inner join orders o on od.o_idx = o.o_idx
+		inner join payment p on p.o_idx = od.o_idx
+		inner join orderitems oi on oi.o_idx = o.o_idx
+		where o_status = '배송준비' group by o.o_idx
+	</select>
+
+	<!-- 주문상태 업데이트 -->
+	<update id="updateOrderStatus">
+		update orderitems set o_status = #{updateStatus},
+		oi_updateDate = now() where oi_productCode = #{oi_productCode};
+	</update>
+
+
+	<!-- CS상태 업데이ㅡ -->
+	<update id="updateCustomerStatus">
+		update order_cs set cs_admin = #{cs_admin}, cs_status
+		= replace(cs_status, "요청", #{status}), refund_amount =
+		#{refund_amount}, refund_date = now() where cs_idx = #{cs_idx};
+	</update>
+
+	<select id="getCategoryData"
+		resultType="com.spring.javaweb6S.vo.ChartVO">
+		select m.c_middleName as label, count(m.c_middleCode) as
+		data
+		from orderitems oi left join product p on oi.p_idx = p.p_idx
+		left join
+		c_middlecategory m on p.c_middleCode = m.c_middleCode GROUP BY
+		m.c_middleCode;
+	</select>
+
+
+	<select id="monthTotalPrice"
+		resultType="com.spring.javaweb6S.vo.ChartVO">
+		select month(o_date) as label, sum(pay_price) as data from
+		orders o
+		left join payment p on o.o_idx = p.o_idx
+		group by label order
+		by label asc;
+	</select>
+
+	<select id="refundCategory"
+		resultType="com.spring.javaweb6S.vo.ChartVO">
+		select cs_category as label, count(*) as data from
+		order_cs;
+	</select>
+
+	<select id="memberRank"
+		resultType="com.spring.javaweb6S.vo.ChartVO">
+		SELECT m.m_mid AS label , SUM(pay_price) AS data FROM smember m
+		LEFT JOIN orders o ON m.m_mid = o.m_mid
+		LEFT JOIN orderitems oi ON o.o_idx = oi.o_idx
+		LEFT JOIN payment pay ON o.o_idx = pay.o_idx
+		GROUP BY label ORDER BY DATA desc
+	</select>
+
+	<select id="memberLevelCnt"
+		resultType="com.spring.javaweb6S.vo.ChartVO">
+		SELECT ml.m_levelStr AS label, COUNT(*) as data FROM smember m
+		LEFT JOIN memberlevel ml ON m.m_level = ml.m_level
+		WHERE m_levelStr != '관리자'
+		GROUP BY label ORDER BY m.m_level;
+	</select>
+
+	<!-- 배송상황업데이트 -->
+	<update id="deliveryUpdate">
+		update orderdetail set deliveryCom = #{deliveryCom},
+		deliveryCode = #{deliveryCode} where o_idx = #{o_idx};
+	</update>
+
+	<update id="deliveryStatusUpdate">
+		update orderitems set o_status = #{status},
+		oi_updateDate = now() where o_idx = #{o_idx}
+	</update>
+
+
+	<!-- 쿠폰 -->
+	<select id="totRecCntCoupon" resultType="int">
+		select count(*) from
+		coupon;
+	</select>
+
+	<select id="getCouponAvailableList"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select * from coupon where cp_useAvailable = 1;
+	</select>
+
+	<insert id="couponInsert">
+		insert into coupon values (default, #{vo.cp_name},
+		#{vo.cp_exPeriod}, #{vo.cp_type}, #{vo.cp_price}, #{vo.cp_ratio},
+		default, #{vo.cp_useAvailable}, #{vo.cp_minValue})
+	</insert>
+
+	<select id="getCouponList"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select * from coupon;
+	</select>
+
+	<update id="couponUpdate">
+		update coupon set cp_name = #{vo.cp_name},
+		cp_exPeriod = #{vo.cp_exPeriod}, cp_type = #{vo.cp_type}, cp_price =
+		#{vo.cp_price}, cp_ratio = #{vo.cp_ratio}, cp_useAvailable =
+		#{vo.cp_useAvailable}, cp_minValue = #{vo.cp_minValue} where cp_idx =
+		#{vo.cp_idx}
+	</update>
+
+	<select id="totRecCntCouponUser" resultType="int">
+		select count(*) from coupon_user;
+	</select>
+
+	<select id="getCouponUserList"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select cu.*, cp.*, m_mid from coupon cp
+		inner join coupon_user cu on cp.cp_idx = cu.cp_idx
+		inner join smember m on m.m_idx = cu.m_idx
+		order by cu.cp_idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+
+	<select id="getCouponPageList"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select * from coupon order by cp_idx desc limit #{startIndexNo},#{pageSize};
+	</select>
+
+	<select id="getUserCouponList"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select cu.*, m.m_level from coupon_user cu
+		left join coupon cp on
+		cu.cp_idx = cp.cp_idx
+		left join smember m on cu.m_idx = m.m_idx where
+		cu.cp_idx = #{cp_idx}
+		<if test="level != 0"> and m_level = #{level}</if>
+	</select>
+
+
+	<select id="getUserLevelList" resultType="int">
+		select m_idx from smember
+		<if test="level != 0"> where m_level = #{level}</if>
+	</select>
+
+	<select id="getMemberCouponList"
+		resultType="com.spring.javaweb6S.vo.CouponVO">
+		select * from coupon_user where m_idx = #{m_idx} and cp_idx
+		= #{cp_idx}
+	</select>
+
+	<insert id="giveMemberCoupon">
+		insert into coupon_user values (default, #{cp_idx},
+		#{m_idx}, default, default, default);
+	</insert>
+
+	<!-- 회원 조회 -->
+
+
+	<!-- QnA 조회 -->
+	<select id="getQnaNoAnswer" resultType="int">
+		select count(*) from
+		product_qna where answerOK="NO";
+	</select>
+
+	<update id="updateQnA">
+		update product_qna set answer_context =
+		#{answer_context}, answer_Date = now(), answerOK="OK" where qna_idx =
+		#{qna_idx};
+	</update>
+
+	<select id="totRecCntQnA" resultType="int">
+		select count(*) from
+		product_qna;
+	</select>
+
+	<select id="getQnAList"
+		resultType="com.spring.javaweb6S.vo.QnaVO">
+		select *, p_name, p_thumbnailIdx from product_qna q
+		inner
+		join product p on p.p_idx = q.p_idx
+		order by qna_Date desc limit
+		#{startIndexNo},#{pageSize};
+	</select>
+
+
+	<select id="getQnASearchRec" resultType="int">
+		select count(*)
+		from product_qna q
+		left join product p on p.p_idx =
+		q.p_idx
+		<where>
+			<if test="openSw != null and openSw[0] !=''">
+				openSw IN
+				<foreach collection="openSw" item="openSw" separator=","
+					open="(" close=")">
+					#{openSw}
+				</foreach>
+			</if>
+			<trim prefix="AND"> <!-- o_status가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="answerOK != null and answerOK[0] != ''">
+					answerOK IN
+					<foreach collection="answerOK" item="answerOK"
+						separator="," open="(" close=")">
+						#{answerOK}
+					</foreach>
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- searchCategory가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="vo.searchKeyword != '' and vo.searchKeyword!=null">
+					${vo.searchCategory} like concat('%',#{vo.searchKeyword},'%')
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- durationCategory가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="vo.durationCategory != ''">
+				 <![CDATA[ ${vo.durationCategory} between #{vo.startDate} AND  date_add(#{vo.endDate}, interval 1 day)]]>
+				</if>
+			</trim>
+		</where>
+		;
+	</select>
+
+	<!-- QnA 검색 -->
+	<select id="getQnASearch"
+		resultType="com.spring.javaweb6S.vo.QnaVO">
+		select *, p_name, p_thumbnailIdx
+		from product_qna q
+		left join product p on p.p_idx = q.p_idx
+		<where>
+			<if test="openSw != null and openSw[0] !=''">
+				openSw IN
+				<foreach collection="openSw" item="openSw" separator=","
+					open="(" close=")">
+					#{openSw}
+				</foreach>
+			</if>
+			<trim prefix="AND"> <!-- o_status가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="answerOK != null and answerOK[0] != ''">
+					answerOK IN
+					<foreach collection="answerOK" item="answerOK"
+						separator="," open="(" close=")">
+						#{answerOK}
+					</foreach>
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- searchCategory가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="vo.searchKeyword != '' and vo.searchKeyword!=null">
+					${vo.searchCategory} like concat('%',#{vo.searchKeyword},'%')
+				</if>
+			</trim>
+			<trim prefix="AND"> <!-- durationCategory가 들어왔을 경우 AND를 붙여준다 -->
+				<if test="vo.durationCategory != ''">
+				 <![CDATA[ ${vo.durationCategory} between #{vo.startDate} AND  date_add(#{vo.endDate}, interval 1 day)]]>
+				</if>
+			</trim>
+		</where>
+		limit #{startIndexNo},#{pageSize} ;
+	</select>
+
+
+	<!-- 1:1 문의 -->
+
+
+	<select id="getInqNoAnswer" resultType="int">
+		select count(*) from
+		inquiry where inq_answerOK = "NO";
+	</select>
+
+
+	<select id="totRecCntInquiry" resultType="int">
+		select count(*) from
+		inquiry;
+	</select>
+
+	<select id="getInquiryList"
+		resultType="com.spring.javaweb6S.vo.InquiryVO">
+		select * from inquiry order by inq_wDate desc limit
+		#{startIndexNo},#{pageSize} ;
+	</select>
+
+	<update id="updateInqAnswer">
+		update inquiry set inq_answerContext =
+		#{inq_answerContext}, inq_answerOK="OK", inq_answerDate = now() where
+		inq_idx = #{inq_idx}
+	</update>
+
+	<!-- 공지등록 -->
+	<insert id="setNewAnnounce">
+		insert into announce values (default,
+		#{vo.ann_title}, #{vo.ann_context}, default, default);
+	</insert>
+
+	<select id="getAllAnnounce"
+		resultType="com.spring.javaweb6S.vo.AnnounceVO">
+		select * from announce
+		<if test="searchKeyword != ''">
+			where ${searchCategory} like
+			concat('%',#{searchKeyword},'%')
+		</if>
+		order by ann_idx desc
+		limit #{startIndexNo},#{pageSize};
+	</select>
+
+	<select id="totRecAnnCnt" resultType="int">
+		select count(*) from announce
+		<if test="searchKeyword != ''">
+			where ${searchCategory} like
+			concat('%',#{searchKeyword},'%')
+		</if>
+	</select>
+
+	<select id="getNotice"
+		resultType="com.spring.javaweb6S.vo.AnnounceVO">
+		select * from announce where ann_idx = #{ann_idx};
+	</select>
+
+	<select id="getPrevNextAnn"
+		resultType="com.spring.javaweb6S.vo.AnnounceVO">
+		select * from announce where ann_idx in (
+		(select ann_idx from announce where <![CDATA[ann_idx < #{ann_idx}]]>
+		order by ann_idx desc limit 1),
+		(select ann_idx from announce where <![CDATA[ann_idx > #{ann_idx}]]>
+		limit 1));
+	</select>
+
+	<delete id="deleteAnnounce">
+		delete from announce where ann_idx = #{ann_idx};
+	</delete>
+
+	<select id="getProductOrderCnt" resultType="int">
+		select COUNT(*) from
+		orderitems WHERE p_idx = #{p_idx};
+	</select>
+
+	<delete id="getProductDelete">
+		delete from product where p_idx = #{p_idx};
+	</delete>
+
+	<select id="getDeliverCnt" resultType="int">
+		SELECT count(*) from
+		orders o
+		left join orderitems oi on oi.o_idx = o.o_idx
+		where o_status =
+		"결제완료"
+	</select>
+
+	<select id="getCSCnt" resultType="int">
+		SELECT COUNT(*) from order_cs
+		where cs_status LIKE '%요청%'
+	</select>
+
+	<select id="getMiddleCategoryCnt" resultType="int">
+		SELECT COUNT(*)
+		from product p
+		left join c_middlecategory c on p.c_middleCode =
+		c.c_middleCode
+		where c.c_middleCode = #{c_middleCode}
+	</select>
+
+	<update id="memberDelete">
+		update smember set m_name="", m_pwd="", m_email="",
+		m_phone="", m_address="", m_birthday=null, m_photo="", m_point=0 where
+		m_idx = #{m_idx};
+	</update>
+
+
+
+</mapper>

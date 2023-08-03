@@ -1,0 +1,236 @@
+
+@font-face {
+	font-family: 'NanumBarunGothic';
+	font-style: normal;
+	font-weight: 400;
+	src:
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot');
+	src:
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.eot?#iefix')
+		format('embedded-opentype'),
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.woff')
+		format('woff'),
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWeb.ttf')
+		format('truetype');
+}
+
+@font-face {
+	font-family: 'NanumBarunGothic';
+	font-style: normal;
+	font-weight: 700;
+	src:
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebBold.eot');
+	src:
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebBold.eot?#iefix')
+		format('embedded-opentype'),
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebBold.woff')
+		format('woff'),
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebBold.ttf')
+		format('truetype')
+}
+
+@font-face {
+	font-family: 'NanumBarunGothic';
+	font-style: normal;
+	font-weight: 300;
+	src:
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebLight.eot');
+	src:
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebLight.eot?#iefix')
+		format('embedded-opentype'),
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebLight.woff')
+		format('woff'),
+		url('//cdn.jsdelivr.net/font-nanumlight/1.0/NanumBarunGothicWebLight.ttf')
+		format('truetype');
+}
+
+.nanumbarungothic * {
+	font-family: 'NanumBarunGothic', sans-serif;
+}
+
+body {
+	font-family: 'Pretendard-Regular';
+}
+
+a{
+	font-family: 'Pretendard-Regular';
+}
+.gmarketSANS{
+	font-family: "GmarketSansMedium";
+}
+.extraText{
+	font-weight: 500;
+	font-size:10pt;
+	color: #bbb;
+}
+.progresses {
+	display: flex;
+	align-items: center;
+	position: relative;
+}
+.step-text:nth-of-type(2){
+	position: absolute;
+	top: 40px;
+  left: -8px;
+	color: black;
+}
+.step-text:nth-of-type(4){
+	position: absolute;
+	top: 40px;
+  left: 42%;
+	color: black;
+}
+.step-text:nth-of-type(5){
+	position: absolute;
+	top: 40px;
+  right: 6px;
+	color: black;
+}
+
+.line {
+	width: 120px;
+	height: 6px;
+	background: #dc3545;
+}
+
+.inactive{
+	background-color: grey !important;
+}
+
+.steps {
+	display: flex;
+	background-color: #dc3545;
+	color: #fff;
+	font-size: 18px;
+	width: 40px;
+	height: 40px;
+	align-items: center;
+	justify-content: center;
+	border-radius: 50%;
+}
+
+/* 인풋 변경 */
+
+.custom-radio .custom-control-label::before {
+  transform:scale(1.2);
+}
+.custom-control-input:checked ~ .custom-control-label.black::before {
+  color: #fff;
+  border-color: black;
+  background-color: black;
+  box-shadow: red !important;
+}
+.custom-radio .custom-control-input:focus ~ .custom-control-label.black::before {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25); /* pink, 25% opacity */
+}
+
+.c-border-top{
+	border-top: 5px double black !important;
+}
+.c-border-bottom{
+	border-bottom: 1px solid black !important;
+}
+
+
+.custom-checkbox .custom-control-label.red::before {
+  transform:scale(1.8);
+}
+.custom-checkbox .custom-control-label.black::before {
+  transform:scale(1.8);
+}
+
+.custom-checkbox .custom-control-label.red::after {
+  transform:scale(1.4);
+}
+.custom-checkbox .custom-control-label.black::after {
+  transform:scale(1.4);
+}
+.custom-control-input:checked ~ .custom-control-label.red::before {
+  color: #fff;
+  border-color: red;
+  background-color: red;
+  box-shadow: red !important;
+}
+.custom-checkbox .custom-control-input:focus ~ .custom-control-label.red::before {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25); /* pink, 25% opacity */
+}
+
+.custom-control-input:checked ~ .custom-control-label.black::before {
+  color: #fff;
+  border-color: black;
+  background-color: black;
+  box-shadow: black !important;
+}
+.custom-checkbox .custom-control-input:focus ~ .custom-control-label.black::before {
+    box-shadow: 0 0 0 1px #fff, 0 0 0 0.2rem rgba(0, 0, 0, 0.25); /* pink, 25% opacity */
+}
+
+.circle {
+	background: #ddd;
+    padding: 10px;
+    border-radius: 50%;
+}
+.circle-dark {
+	background: red;
+  padding: 10px;
+  border-radius: 50%;
+}
+
+.btn-black {
+	border: 0;
+	background-color: black;
+	height: 50px;
+	width: 150px;
+	color: white;
+}
+
+.btn-small {
+	width: 100px;
+	height: 33px;
+}
+
+.btn-black-outline {
+	border: 1px solid black;
+	background-color: white;
+	height: 50px;
+	width: 150px;
+	color: black;
+	cursor: pointer;
+}
+.gmarketSans {
+	font-family: "GmarketSansMedium";
+}
+
+.popup {
+	font-family: 'NanumBarunGothic';
+}
+
+.popup-border {
+	border-top: 10px solid #eee;
+}
+
+.letter-spacing {
+	letter-spacing: 5px;
+}
+
+.border-black{
+	border-bottom: 2px solid black;
+}
+
+.table-responsive thead th {
+	font-family: "GmarketSansMedium";
+	font-size:10pt;
+}
+
+.dateText{
+	font-size:10pt;
+}
+
+.selectRow{
+	cursor:pointer;
+}
+
+.selected{
+	border: 1px dashed #aaa;
+	background-color: #efefef;
+}

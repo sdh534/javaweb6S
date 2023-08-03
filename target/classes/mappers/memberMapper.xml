@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb6S.dao.MemberDAO">
+	<select id="getMemberMidCheck" resultType="com.spring.javaweb6S.vo.MemberVO">
+		select * from sMember m
+		LEFT JOIN memberlevel ON memberlevel.m_level = m.m_level
+		where m.m_mid = #{mid};
+	</select>
+	
+	<insert id="setMemberJoin">
+		insert into smember values (default, #{vo.m_mid}, #{vo.m_name}, #{vo.m_pwd},  #{vo.m_email}, #{vo.m_phone},  #{vo.m_address},  #{vo.m_birthday},  #{vo.m_mailOk}, default, default, default, default, default, default);
+	</insert>
+	
+	<update id="updateLastDate">
+		update smember set m_lastDate = now() where m_mid = #{m_mid};
+	</update>
+	
+	<select id="getAllOrder" resultType="com.spring.javaweb6S.vo.OrderVO">
+		select o.*, pay.* ,oi.*, p.p_name, p_thumbnailIdx, p_price, cs.* from orders o 
+		left join payment pay on o.o_idx = pay.o_idx
+		left join orderitems oi on o.o_idx = oi.o_idx
+		left join product p on oi.p_idx = p.p_idx
+		left join order_cs cs on cs.oi_productCode = oi.oi_productCode
+		where o.m_mid = #{mid} 
+		<if test="startDate != '' and endDate != ''">
+				 and <![CDATA[ o.o_date >= #{startDate} AND o.o_date < date_add(#{endDate}, interval 1 day)]]>
+		</if>
+		order by o.o_date desc
+		<if test="pageSize != '0'">
+		limit #{startIndexNo}, #{pageSize} 
+		</if>
+		;
+	</select>
+	
+	<select id="totOrderDate" resultType="int">
+		select count(*) from orders o 
+		left join payment pay on o.o_idx = pay.o_idx
+		left join orderitems oi on o.o_idx = oi.o_idx
+		left join product p on oi.p_idx = p.p_idx
+		left join order_cs cs on cs.oi_productCode = oi.oi_productCode
+		where o.m_mid = #{mid} 
+		<if test="startDate != '' and endDate != ''">
+				 and <![CDATA[ o.o_date >= #{startDate} AND o.o_date < date_add(#{endDate}, interval 1 day)]]>
+		</if>
+		order by o.o_date desc;
+	</select>
+	
+	<select id="totPointDate" resultType="int">
+		select count(*) from point 
+		inner join orderitems oi on point.oi_productCode = oi.oi_productCode
+		inner join product p on oi.p_idx = p.p_idx
+		where point.m_mid = #{mid} 
+		<if test="startDate != '' and endDate != ''">
+				 and <![CDATA[ point_date >= #{startDate} AND point_date < date_add(#{endDate}, interval 1 day)]]>
+		</if>
+	</select>
+	
+	<select id="getAllPoint" resultType="com.spring.javaweb6S.vo.OrderVO">
+		select * from point 
+		left join orders o on point.o_idx = o.o_idx
+		left join orderitems oi on point.oi_productCode = oi.oi_productCode
+		left join product p on oi.p_idx = p.p_idx
+		where point.m_mid = #{mid} 
+		<if test="startDate != '' and endDate != ''">
+				 and <![CDATA[ point_date >= #{startDate} AND point_date < date_add(#{endDate}, interval 1 day)]]>
+		</if>
+		order by point_date desc
+		<if test="startIndexNo != '0' and pageSize != '0'">
+		limit #{startIndexNo}, #{pageSize} 
+		</if>
+		;
+	</select>
+	
+	<select id="getWishList" resultType="int">
+		select p_idx from wishlist where m_mid = #{mid} and p_idx=#{p_idx};
+	</select>
+	
+	<delete id="removeWishList">
+		delete from wishlist where m_mid = #{mid} and p_idx = #{p_idx};
+	</delete>
+	
+	<insert id="addWishList">
+		insert into wishlist values (#{p_idx}, #{mid});
+	</insert>
+	
+	
+	<update id="memberLevelUpdate">
+		update smember set m_level = #{m_level} where m_idx = #{m_idx}; 
+	</update>
+	
+	<select id="getAllMember" resultType="com.spring.javaweb6S.vo.MemberVO">
+		select *, DATEDIFF(NOW(), m_lastDate) AS delDiff from smember;
+	</select> 
+	
+	<select id="getUserCoupon" resultType="com.spring.javaweb6S.vo.CouponVO">
+		select cu.*, c.*, DATE_ADD(cu_useDate, interval cp_exPeriod day) as cp_endDate from coupon_user cu
+		left join coupon c on cu.cp_idx = c.cp_idx
+		where m_idx = #{idx};
+	</select>
+	
+	<select id="getUserReview" resultType="com.spring.javaweb6S.vo.ReviewVO">
+		select r.*, m.m_photo from sreview r 
+		inner join smember m on m.m_mid = r.m_mid
+		where r.m_mid = #{mid};
+	</select>
+	
+	<update id="setMemberDelete">
+		update smember set m_userDel = 'Y' where m_mid = #{mid};
+	</update>
+	
+	<update id="setMemberUpdate">
+		update smember set <if test='vo.m_pwd neq ""'> m_pwd = #{vo.m_pwd},</if> 
+		m_email = #{vo.m_email},
+		m_birthday = #{vo.m_birthday},
+		m_address = #{vo.m_address},
+		m_mailOK = #{vo.m_mailOk},
+		m_phone = #{vo.m_phone}
+		where m_mid = #{vo.m_mid};
+	</update>
+	
+	<update id="setMemberPwdUpdate">
+		update smember set m_pwd = #{pwd} where m_mid = #{m_mid}
+	</update>
+	
+	<!-- 레벨별 적립율 가져오기 -->
+	<select id="getMemberLevel" resultType="int">
+		select lv.m_pointRatio from smember s inner join memberlevel lv on s.m_level = lv.m_level
+		where m_mid = #{mid}
+	</select>
+	
+	<select id="getMemberPageList" resultType="com.spring.javaweb6S.vo.MemberVO">
+		select *, DATEDIFF(NOW(), m_lastDate) AS delDiff  from smember 
+		order by m_idx asc
+		limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="totRecCnt" resultType="int">
+		select count(*) from smember;
+	</select>
+	
+	<!-- 아이디찾기 -->
+	<select id="getMemberIdFind" resultType="com.spring.javaweb6S.vo.MemberVO">
+		select * from smember where m_name = #{name} and m_email = #{email};
+	</select>
+	
+	
+	<!-- QnA 삭제하기 -->
+	<delete id="deleteQnA">
+		delete from product_qna where qna_idx = #{qna_idx};
+	</delete>
+	
+	
+	<!-- 리뷰 하나 가져오기 - 수정용 -->
+	<select id="getUserReviewOne" resultType="com.spring.javaweb6S.vo.ReviewVO">
+		select r.* , p_name, p_thumbnailIdx from sreview r
+		inner join product p on p.p_idx = r.p_idx
+		where review_idx = #{review_idx};
+	</select>
+	
+	
+	<!-- 리뷰 삭제하기 -->
+	<delete id="deleteReview">
+		delete from sreview where review_idx = #{review_idx};
+	</delete>
+	
+	<!-- 회원이 작성한 QnA 목록 -->
+	<select id="totQnARecCnt" resultType="int">
+		select count(*) from product_qna where m_mid = #{mid};
+	</select>
+	
+	<select id="getMemberQnAList" resultType="com.spring.javaweb6S.vo.QnaVO">
+		select *, p_name, p_thumbnailIdx from product_qna q
+		inner join product p on p.p_idx = q.p_idx
+		where m_mid = #{mid}
+		order by qna_Date desc limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="getQnASearchRec" resultType="int">
+		select count(*)
+		from product_qna q
+		left join product p on p.p_idx = q.p_idx 
+		<where>
+		m_mid = #{mid}
+		<trim prefix="AND">
+		<if test="openSw != null and openSw[0] !=''">
+			openSw IN
+			<foreach collection="openSw" item="openSw" separator="," open="(" close=")">
+			#{openSw}
+			</foreach>
+		</if>
+		</trim>
+		<trim prefix="AND"> <!-- o_status가 들어왔을 경우 AND를 붙여준다   -->
+			<if test="answerOK != null and answerOK[0] != ''">
+				answerOK IN
+				<foreach collection="answerOK" item="answerOK" separator="," open="(" close=")">
+				#{answerOK}
+				</foreach>
+			</if>
+		</trim>
+		<trim prefix="AND"> <!-- searchCategory가 들어왔을 경우 AND를 붙여준다   -->
+			<if test="vo.searchKeyword != '' and vo.searchKeyword!=null">
+				${vo.searchCategory} like concat('%',#{vo.searchKeyword},'%')
+			</if>
+		</trim>
+		<trim prefix="AND"> <!-- durationCategory가 들어왔을 경우 AND를 붙여준다   -->
+			<if test="vo.durationCategory != ''">
+				 <![CDATA[ ${vo.durationCategory} between #{vo.startDate} AND  date_add(#{vo.endDate}, interval 1 day)]]>
+			</if>
+		</trim>
+		</where>
+		;
+	</select>
+	
+	
+	<!-- 회원이 작성한 QnA 조회 -->
+	<select id="getQnASearch" resultType="com.spring.javaweb6S.vo.QnaVO">
+		select *, p_name, p_thumbnailIdx 
+		from product_qna q
+		left join product p on p.p_idx = q.p_idx 
+		<where>
+		m_mid = #{mid}
+		<trim prefix="AND">
+		<if test="openSw != null and openSw[0] !=''">
+			openSw IN
+			<foreach collection="openSw" item="openSw" separator="," open="(" close=")">
+			#{openSw}
+			</foreach>
+		</if>
+		</trim>
+		<trim prefix="AND"> <!-- o_status가 들어왔을 경우 AND를 붙여준다   -->
+			<if test="answerOK != null and answerOK[0] != ''">
+				answerOK IN
+				<foreach collection="answerOK" item="answerOK" separator="," open="(" close=")">
+				#{answerOK}
+				</foreach>
+			</if>
+		</trim>
+		<trim prefix="AND"> <!-- searchCategory가 들어왔을 경우 AND를 붙여준다   -->
+			<if test="vo.searchKeyword != '' and vo.searchKeyword!=null">
+				${vo.searchCategory} like concat('%',#{vo.searchKeyword},'%')
+			</if>
+		</trim>
+		<trim prefix="AND"> <!-- durationCategory가 들어왔을 경우 AND를 붙여준다   -->
+			<if test="vo.durationCategory != ''">
+				 <![CDATA[ ${vo.durationCategory} between #{vo.startDate} AND  date_add(#{vo.endDate}, interval 1 day)]]>
+			</if>
+		</trim>
+		</where>
+		limit #{startIndexNo},#{pageSize} ;
+	</select>
+	
+	<!-- 1:1 문의 등록 -->
+	<insert id="setMemberInquiry">
+		insert into inquiry values (default, #{vo.m_mid}, 
+		<if test="vo.oi_productCode != ''">
+		#{vo.oi_productCode},
+		</if>
+		<if test="vo.oi_productCode == ''">
+		default,
+		</if>
+		 #{vo.inq_category}, #{vo.inq_title}, #{vo.inq_context}, default, default, default, default);
+	</insert>
+	
+	<!-- 등록한 1:1문의 내역건수 조회 -->
+	<select id="totInqRecCnt" resultType="int">
+		select count(*) from inquiry where m_mid = #{mid} 
+	</select>
+	
+	<select id="getMemberInquiryList" resultType="com.spring.javaweb6S.vo.InquiryVO">
+		select * from inquiry where m_mid = #{mid}
+		order by inq_wDate desc 
+		limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="getMemberInquiry" resultType="com.spring.javaweb6S.vo.InquiryVO">
+		select * from inquiry where inq_idx = #{inq_idx};
+	</select>
+	
+	<!-- 1:1 문의 이전/다음글 가져오기 -->
+	<select id="getPrevNextInq" resultType="com.spring.javaweb6S.vo.InquiryVO">
+	 	select * from inquiry where inq_idx in (
+		  (select inq_idx from inquiry where <![CDATA[inq_idx < #{inq_idx}]]> order by inq_idx desc limit 1),
+		  (select inq_idx from inquiry where <![CDATA[inq_idx > #{inq_idx}]]> limit 1));
+	</select>
+	
+	<!-- 레벨별 회원조회 -->
+	<select id="totLevCnt" resultType="int">
+		select count(*) from smember where m_level = #{m_level};
+	</select>
+	<select id="totwishRecCnt" resultType="int">
+		select count(*) from wishlist where m_mid = #{mid};
+	</select>
+	
+	<select id="getAllWishList" resultType="com.spring.javaweb6S.vo.ProductVO">
+		select * from wishlist w
+		inner join product p on w.p_idx = p.p_idx
+		where m_mid = #{mid}
+		limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="getMemberLevelPageList" resultType="com.spring.javaweb6S.vo.MemberVO">
+		select * from smember where m_level = #{level}
+			limit #{startIndexNo}, #{pageSize};
+	</select>
+	
+	<select id="getMemberCoupon" resultType="int">
+		select count(*) from coupon_user where m_idx = #{m_idx} and cu_status=false;
+	</select>
+	
+	<select id="getMemberOrder" resultType="int">
+		SELECT count(*) from orders o
+		left join orderitems oi on oi.o_idx = o.o_idx
+		where o_status != "구매확정" and o_status != "주문취소" and o_status != "배송완료"
+		and m_mid = #{mid}
+	</select>
+</mapper>

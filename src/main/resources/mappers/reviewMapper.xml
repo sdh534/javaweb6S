@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.spring.javaweb6S.dao.ReviewDAO">
+	<insert id="newReviewInsert">
+		insert into sreview values (default, #{vo.m_mid}, #{vo.p_idx}, #{vo.oi_productCode}, #{vo.review_content},  #{vo.review_photo}, #{vo.review_rating}, default, default, default, default)
+	</insert>
+	
+	<insert id="newCSInsert">
+		insert into order_cs values (default, #{vo.o_idx}, #{vo.oi_productCode}, #{vo.cancelSelect}, #{vo.cs_context}, #{vo.cs_category}, #{vo.cs_img}, 
+		default, default, default, #{vo.refund_bank}, #{vo.refund_holder}, #{vo.refund_account}, default);
+	</insert>
+
+
+	<select id="getProductReview" resultType="com.spring.javaweb6S.vo.ReviewVO">
+		select review.*, m_photo from sreview review
+		inner join smember mem on mem.m_mid = review.m_mid
+		where p_idx = #{p_idx};
+	</select>
+
+	<select id="getProductReviewList" resultType="com.spring.javaweb6S.vo.ReviewVO">
+		select review.*, m_photo from sreview review
+		inner join smember mem on mem.m_mid = review.m_mid
+		where p_idx = #{p_idx}
+		order by review_date desc
+		limit #{startIndexNo} , #{pageSize};
+	</select>
+	
+	<select id="getProductRating" resultType="double">
+		select avg(review_rating) from sreview where p_idx = #{p_idx};
+	</select>
+	
+	<select id="getOrderReview" resultType="int">
+		select count(*) from sreview where oi_productCode = #{oi_productCode};
+	</select>
+	
+	<update id="setReviewThumb">
+		update sreview set review_thumb = review_thumb+1 where review_idx = #{review_idx}; 
+	</update>
+	
+	<update id="updateReview">
+		update sreview set review_content = #{vo.review_content}, review_photo = #{vo.review_photo}, review_rating = #{vo.review_rating} 
+		where review_idx = #{vo.review_idx}
+	</update>
+</mapper>
