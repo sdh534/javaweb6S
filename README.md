@@ -20,8 +20,11 @@
       <img src="https://img.shields.io/badge/css-1572B6?style=for-the-badge&logo=css3&logoColor=white"> 
       <img src="https://img.shields.io/badge/javascript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"> 
       <img src="https://img.shields.io/badge/jquery-0769AD?style=for-the-badge&logo=jquery&logoColor=white">
-      <img src="https://img.shields.io/badge/bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white">
+      <img src="https://img.shields.io/badge/bootstrap4-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white">
       <img src="https://img.shields.io/badge/fontawesome-339AF0?style=for-the-badge&logo=fontawesome&logoColor=white">
+    </li>
+    <li>
+     그외 : chart.js / SweetAlert2 / CkEditor4 / Iamport 결제 모듈 / TOAST UI GRID
     </li>
 </ul>
 
@@ -88,8 +91,8 @@
             <ul>
                 <li>카테고리별 상품 조회 가능</li>
                 <li>상품검색 가능</li>
-                  <img src="https://i.imgur.com/qDI53A2.png">
-                  <img src="https://i.imgur.com/acr6Q6k.png">
+                  <img src="https://i.imgur.com/qDI53A2.png" width="500px">
+                  <img src="https://i.imgur.com/acr6Q6k.png" width="500px">
             </ul>
         </li>
         <br/>
@@ -99,8 +102,8 @@
                 <li>아이디 중복검사</li>
                 <li>프론트 유효성 검사</li>
                 <li>SMTP이용 - 임시비밀번호 재발급</li>
-                  <img src="https://i.imgur.com/TaYaBZp.png">
-                  <img src="https://i.imgur.com/AD2wTqr.png">
+                  <img src="https://i.imgur.com/TaYaBZp.png" width="500px">
+                  <img src="https://i.imgur.com/AD2wTqr.png" width="500px">
             </ul>
         </li>
         <br/>
@@ -110,7 +113,7 @@
                 <li>회원탈퇴, 회원수정 가능</li>
                 <li>주문상세보기 클릭시 해당 주문 관련 정보를 팝업으로 표시</li>
                 <li>쿠폰 사용 내역, 적립금 사용 내역 조회 가능</li>
-                    <img src="https://i.imgur.com/gnNQP3y.png">
+                    <img src="https://i.imgur.com/gnNQP3y.png" width="500px">
             </ul>
         </li>
         <li>
@@ -120,10 +123,10 @@
                 <li>수량 변경 가능</li>
                 <li>리뷰 : 상품 구매 후 구매확정시에만 리뷰 작성 가능, 페이징 처리</li>
                 <li>QnA : 비공개여부 선택 가능, 관리자 페이지에서 답글 가능</li>
-                    <img src="https://i.imgur.com/GlNblvb.png">
-                    <img src="https://i.imgur.com/N1ykOd3.png">
-                    <img src="https://i.imgur.com/YAe4T38.png">
-                    <img src="https://i.imgur.com/EwwTZ1M.png">
+                    <img src="https://i.imgur.com/GlNblvb.png" width="500px">
+                    <img src="https://i.imgur.com/N1ykOd3.png" width="500px">
+                    <img src="https://i.imgur.com/YAe4T38.png" width="500px">
+                    <img src="https://i.imgur.com/EwwTZ1M.png" width="500px">
             </ul>
         </li>
         <br/>
@@ -135,7 +138,7 @@
                 <li>선택 삭제 가능</li>
                 <li>배송비 5만원 이상일 경우 0원으로, 이하일 경우 3천원으로 변경</li>
                 <li>
-                    <img src="https://i.imgur.com/TYzsyGM.png">
+                    <img src="https://i.imgur.com/TYzsyGM.png" width="500px">
                 </li>
             </ul>
         </li>
@@ -147,7 +150,7 @@
                 <li>구매 클릭시 프론트에서 배송정보 유효성 검사후 결제 진행</li>
                 <li>무통장입금, 가상계좌 결제 가능</li>
                 <li>쿠폰 및 적립금 사용 가능</li>
-                    <img src="https://i.imgur.com/jJUXRfe.png">
+                    <img src="https://i.imgur.com/jJUXRfe.png" width="500px">
             </ul>
         </li>
       <li>
@@ -155,9 +158,9 @@
             <ul>
                 <li>주문 날짜 별 검색 가능</li>
                 <li>주문한 상품에 대한 기본 정보 표시</li>
-                <li>가상계좌 구매시 계좌번호 표시 - Iamport API & 스케줄러 이용, 10분마다 무통장입금 자동 확인</li>
-                    <img src="https://i.imgur.com/9m5VwEz.png">
-                    <img src="https://i.imgur.com/LDomp0x.png">
+                <li>가상계좌 구매시 계좌번호 표시 - Iamport API & 스케줄러 이용, 10분마다 무통장입금 결제 자동 확인</li>
+                    <img src="https://i.imgur.com/9m5VwEz.png" width="500px">
+                    <img src="https://imgur.com/v5cNxVu.png" width="500px">
             </ul>
         </li>
         <br/>
@@ -165,14 +168,34 @@
             <strong>관리자 페이지 메인</strong>
             <ul>
                 <li>최근 5건의 주문 목록, CS 통계</li>
+                <img src="https://i.imgur.com/Nx5Gvb6.png" width="500px">
             </ul>
         </li>
         <br/>
         <li>
+            <strong>관리자 상품 관리</strong>
+            <ul>
+                <li>카테고리 생성/삭제 가능</li>
+                <li>대분류 선택 후 동적으로 중분류 활성화</li>
+                <li>카테고리 삭제 - 해당 카테고리 내에 상품이 1개도 없을 경우 삭제 가능</li>
+                <li>상품 추가 - 이미지 드래그&드롭을 통한 업로드 기능, 썸네일 지정 가능, CK에디터 사용</li>
+                <li>상품 리스트 - TOAST UI Grid 이용, 리스트에서 더블클릭으로 상품 정보 수정 가능</li>
+                <li>상품 삭제 - 주문이 1건도 들어오지 않은 경우 삭제 가능</li>
+                <img src="https://i.imgur.com/BXLgIqG.png" width="500px">
+                <img src="https://imgur.com/MeEavtF.png" width="500px">
+                <img src="https://i.imgur.com/BXLgIqG.png" width="500px">
+                <img src="https://imgur.com/hiJZIqM.png" width="500px">
+            </ul>
+        </li>
+         <br/>
+        <li>
             <strong>관리자 페이지 주문목록</strong>
             <ul>
                 <li>주문상태 변경 기능</li>
-                <li>쿼리 스트링 이용 동적 검색</li>
+                <li>쿼리스트링, AJAX 이용 - 비동기식 검색 및 갱신</li>
+                <li>선택 주문 주문상태 변경 가능</li>
+                <img src="https://imgur.com/EEiPcdp.png" width="500px">
+                <img src="https://imgur.com/IZeVU0j.png" width="500px">
             </ul>
         </li>
         <br/>
@@ -184,19 +207,6 @@
             </ul>
         </li>
         <br/>
-        <li>
-            <strong>관리자 카테고리 목록</strong>
-            <ul>
-                <li>카테고리 생성/삭제 가능</li>
-                <li>대분류 선택 후 동적으로 중분류 활성화</li>
-            </ul>
-        </li>
-        <li>
-            <strong>관리자 페이지 상품 목록</strong>
-            <ul>
-                <li>TOAST UI Grid 이용</li>
-            </ul>
-        </li>
     </ul>
 </div>
 <br/>
